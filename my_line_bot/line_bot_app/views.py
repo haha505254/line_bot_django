@@ -73,15 +73,15 @@ def handle_audio_message(event):
         audio_file.write(message_content.content)
 
     # 获取音频文件的 URL
-    audio_file_url = f"{settings.MEDIA_URL}{unique_filename}"
+    audio_file_url = f"https://0196-123-194-216-207.jp.ngrok.io{settings.MEDIA_URL}{unique_filename}"
 
 
 
     logging.info("Received and saved audio message")
 
     print(audio_file_url)
-    # audio_send_message = AudioSendMessage(original_content_url=audio_url, duration=event.message.duration)
-    # line_bot_api.reply_message(event.reply_token, audio_send_message)
+    audio_send_message = AudioSendMessage(original_content_url=  audio_file_url, duration=event.message.duration)
+    line_bot_api.reply_message(event.reply_token, audio_send_message)
     # Clean up the files
     # os.remove(unique_filename)
     # os.remove(wav_filename)
