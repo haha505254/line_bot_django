@@ -61,6 +61,11 @@ def callback(request):
     return HttpResponse()
 
 
+def get_audio_duration(audio_file_path):
+    audio = AudioSegment.from_file(audio_file_path)
+    return len(audio)+1000
+
+
 @handler.add(MessageEvent, message=AudioMessage)
 def handle_audio_message(event):
     message_content = line_bot_api.get_message_content(event.message.id)
@@ -75,12 +80,12 @@ def handle_audio_message(event):
     # 获取音频文件的 URL
     audio_file_url = f"https://0196-123-194-216-207.jp.ngrok.io{settings.MEDIA_URL}{unique_filename}"
 
-
+    duration = get_audio_duration(audio_file_path)
 
     logging.info("Received and saved audio message")
 
     print(audio_file_url)
-    audio_send_message = AudioSendMessage(original_content_url=  audio_file_url, duration=event.message.duration)
+    audio_send_message = AudioSendMessage(original_content_url=  audio_file_url, duration=duration )
     line_bot_api.reply_message(event.reply_token, audio_send_message)
     # Clean up the files
     # os.remove(unique_filename)
