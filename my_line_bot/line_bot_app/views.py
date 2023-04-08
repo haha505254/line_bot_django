@@ -27,6 +27,7 @@ from pydub import AudioSegment
 import requests
 import json
 from dotenv import load_dotenv
+import openai
 # 讀取.env檔
 load_dotenv()
 
@@ -36,7 +37,7 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %
 
 line_bot_api = LineBotApi(os.environ['LINE_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['LINE_CHANNEL_SECRET'])
-
+openai.api_key = os.environ['OPENAI_API_KEY']
 
 
 def chat_with_gpt3(message):
@@ -64,7 +65,7 @@ def chat_with_gpt3(message):
 def convert_audio_to_wav(audio_file_path):
     audio = AudioSegment.from_file(audio_file_path, format="m4a")
     wav_file_path = audio_file_path.replace(".m4a", ".wav")
-    audio.export(wav_file_path, format="wav")
+    audio.export(wav_file_path, format="wav", parameters=["-q:a", "0", "-ac", "1", "-ar", "16000"])
     return wav_file_path
 
 # Ensure static directory exists
@@ -72,20 +73,16 @@ if not os.path.exists(settings.STATIC_ROOT):
     os.makedirs(settings.STATIC_ROOT)
 
 def speech_to_text(audio_file_path):
-    recognizer = sr.Recognizer()
-
-    with sr.AudioFile(audio_file_path) as audio_file:
-        audio_data = recognizer.record(audio_file)
+    with open(audio_file_path, "rb") as audio_file:
+        transcript = openai.Audio.transcribe("whisper-1", audio_file)
 
     try:
-        text = recognizer.recognize_google(audio_data, language="en-US")
-        print(text)
-    except sr.UnknownValueError:
+        text = transcript['text']
+        print("奇怪發音"+text)
+    except KeyError:
         text = "無法識別語音"
         logging.warning("無法識別語音")
-    except sr.RequestError as e:
-        text = f"發生錯誤：{e}"
-        logging.error(f"發生錯誤：{e}")
+
     return text
 
 @csrf_exempt
@@ -109,10 +106,10 @@ def synthesize_speech(text, unique_filename):
     
     session = Session(profile_name="default")
     polly = session.client("polly", region_name="us-east-1")
-
+    # Seoyeon kr   Ruth en
     try:
         response = polly.synthesize_speech(Text=text, OutputFormat="mp3",
-                                           VoiceId="Ruth", Engine='neural')
+                                           VoiceId="Seoyeon", Engine='neural')
     except (BotoCoreError, ClientError) as error:
         print(error)
         sys.exit(-1)
@@ -160,8 +157,8 @@ def handle_audio_message(event):
     # step6:將回應後的文字 轉語音 且把語音檔案覆蓋掉原本輸入的語音檔案(故此變數synthesized_speech_path無作用)
     synthesized_speech_path = synthesize_speech(response_message, unique_filename)
 
-    # step7:將語音使用linebot要求格式回傳語音檔案
-    audio_file_url = f"https://0196-123-194-216-207.jp.ngrok.io{settings.MEDIA_URL}{unique_filename}"
+    # step7:將語音使用linebot要求格式回傳語音檔案  
+    audio_file_url = f"https://2a5a-1-200-48-236.ngrok-free.app{settings.MEDIA_URL}{unique_filename}"
 
     duration = get_audio_duration(audio_file_path)
 
