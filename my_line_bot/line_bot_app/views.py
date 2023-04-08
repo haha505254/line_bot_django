@@ -26,19 +26,21 @@ from tempfile import gettempdir
 from pydub import AudioSegment
 import requests
 import json
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
-OPENAI_API_KEY = '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'
-line_bot_api = LineBotApi('ETKCbwm9fhQuQ2Tu3KjSo71tIc1jUdOF5Q3jdVWsN/EQ5G9x8gj2PPn8BZQc4Se7uwfVuzzQyqtYqRj+fZXFB/xMKDjKHpJUPko3w2+LoPNzcZxVEYooGacQR45+GJsUl4f8ZOy9GRLwFozzypH9VwdB04t89/1O/w1cDnyilFU=')
-handler = WebhookHandler('f48d4087c04e00b31b1b5264d1dcc2a5')
+line_bot_api = LineBotApi(os.environ['LINE_CHANNEL_ACCESS_TOKEN'])
+handler = WebhookHandler(os.environ['LINE_CHANNEL_SECRET'])
 
 def chat_with_gpt3(message):
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + 'something token',
+        'Authorization': 'Bearer ' + os.environ['OPENAI_API_KEY'],
     }
 
     json_data = {
