@@ -27,7 +27,7 @@ from pydub import AudioSegment
 import requests
 import json
 from dotenv import load_dotenv
-
+# 讀取.env檔
 load_dotenv()
 
 
@@ -36,6 +36,8 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %
 
 line_bot_api = LineBotApi(os.environ['LINE_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['LINE_CHANNEL_SECRET'])
+
+
 
 def chat_with_gpt3(message):
     headers = {
@@ -130,20 +132,35 @@ def synthesize_speech(text, unique_filename):
 
     return audio_file_path
 
+
+
+# 入口點 
 @handler.add(MessageEvent, message=AudioMessage)
 def handle_audio_message(event):
-    message_content = line_bot_api.get_message_content(event.message.id)
-    unique_filename = f"{uuid.uuid4()}.m4a"
 
+    # step1:取得音檔訊息
+    message_content = line_bot_api.get_message_content(event.message.id)
+    
+
+    # step2:將音檔保存到MEDIA_folder 方便等等讀取 檔名使用uuid4 避免重複
+    unique_filename = f"{uuid.uuid4()}.m4a"
     audio_file_path = os.path.join(settings.MEDIA_ROOT, unique_filename)
     with open(audio_file_path, 'wb') as audio_file:
         audio_file.write(message_content.content)
 
+    # step3:將音檔從m4a轉為wav (因為語音辨識speech_recognition 只接受wav) 
     wav_file_path = convert_audio_to_wav(audio_file_path)
+
+    # step4:將音檔使用speech_recognition語音轉文字
     text = speech_to_text(wav_file_path)
+
+    # step5:將使用者輸入語音對應之文字送到openai 取得 文字回應 
     response_message = chat_with_gpt3(text)
+
+    # step6:將回應後的文字 轉語音 且把語音檔案覆蓋掉原本輸入的語音檔案(故此變數synthesized_speech_path無作用)
     synthesized_speech_path = synthesize_speech(response_message, unique_filename)
 
+    # step7:將語音使用linebot要求格式回傳語音檔案
     audio_file_url = f"https://0196-123-194-216-207.jp.ngrok.io{settings.MEDIA_URL}{unique_filename}"
 
     duration = get_audio_duration(audio_file_path)
