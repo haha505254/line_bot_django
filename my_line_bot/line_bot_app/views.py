@@ -140,7 +140,7 @@ def handle_audio_message(event):
     
 
     # step2:將音檔保存到MEDIA_folder 方便等等讀取 檔名使用uuid4 避免重複
-    unique_filename = f"{uuid.uuid4()}.m4a"
+    unique_filename = f"{uuid.uuid4()}.wav"
     audio_file_path = os.path.join(settings.MEDIA_ROOT, unique_filename)
     with open(audio_file_path, 'wb') as audio_file:
         audio_file.write(message_content.content)
