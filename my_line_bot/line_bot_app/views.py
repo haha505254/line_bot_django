@@ -38,7 +38,7 @@ handler = WebhookHandler('f48d4087c04e00b31b1b5264d1dcc2a5')
 def chat_with_gpt3(message):
     headers = {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + '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',
+        'Authorization': 'Bearer ' + 'something token',
     }
 
     json_data = {
