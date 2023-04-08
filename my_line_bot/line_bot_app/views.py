@@ -24,6 +24,9 @@ import sys
 import subprocess
 from tempfile import gettempdir
 from pydub import AudioSegment
+import requests
+import json
+
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
 
@@ -31,6 +34,28 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %
 OPENAI_API_KEY = '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'
 line_bot_api = LineBotApi('ETKCbwm9fhQuQ2Tu3KjSo71tIc1jUdOF5Q3jdVWsN/EQ5G9x8gj2PPn8BZQc4Se7uwfVuzzQyqtYqRj+fZXFB/xMKDjKHpJUPko3w2+LoPNzcZxVEYooGacQR45+GJsUl4f8ZOy9GRLwFozzypH9VwdB04t89/1O/w1cDnyilFU=')
 handler = WebhookHandler('f48d4087c04e00b31b1b5264d1dcc2a5')
+
+def chat_with_gpt3(message):
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + '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',
+    }
+
+    json_data = {
+        'model': 'gpt-3.5-turbo',
+        'messages': [
+            {
+                'role': 'user',
+                'content': message,
+            },
+        ],
+    }
+
+    response = requests.post('https://api.openai.com/v1/chat/completions', headers=headers, json=json_data)
+    response_json = json.loads(response.text)
+    return response_json['choices'][0]['message']['content']
+
+
 
 def convert_audio_to_wav(audio_file_path):
     audio = AudioSegment.from_file(audio_file_path, format="m4a")
@@ -49,7 +74,8 @@ def speech_to_text(audio_file_path):
         audio_data = recognizer.record(audio_file)
 
     try:
-        text = recognizer.recognize_google(audio_data, language="zh-TW")
+        text = recognizer.recognize_google(audio_data, language="en-US")
+        print(text)
     except sr.UnknownValueError:
         text = "無法識別語音"
         logging.warning("無法識別語音")
@@ -113,7 +139,8 @@ def handle_audio_message(event):
 
     wav_file_path = convert_audio_to_wav(audio_file_path)
     text = speech_to_text(wav_file_path)
-    synthesized_speech_path = synthesize_speech(text, unique_filename)
+    response_message = chat_with_gpt3(text)
+    synthesized_speech_path = synthesize_speech(response_message, unique_filename)
 
     audio_file_url = f"https://0196-123-194-216-207.jp.ngrok.io{settings.MEDIA_URL}{unique_filename}"
 
