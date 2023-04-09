@@ -37,7 +37,7 @@ from langdetect import detect
 load_dotenv()
 
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 line_bot_api = LineBotApi(os.environ['LINE_CHANNEL_ACCESS_TOKEN'])
@@ -117,21 +117,21 @@ def get_audio_duration(audio_file_path):
 def synthesize_speech(text, unique_filename):
     session = Session(profile_name="default")
     polly = session.client("polly", region_name="us-east-1")
-
+    print('偵測什麼文字'+text)
     language = detect_language(text)
     print("這是什麼語言" + language)
 
     # 創建語言到VoiceId的映射
     voice_id_map = {
-        'ko': 'Seoyeon',
-        'en': 'Ruth',
-        'zh-tw': 'Zhiyu',
-        'zh-cn': 'Huijin',  # 判斷廣東話
-        'fr': 'Lea',
-        'de' : 'Vicki',
-        'ja' : 'Kazuha',
-        'pt' : 'Ines',
-        'es' : 'Lucia'
+        'ko': 'Seoyeon', #韓文
+        'en': 'Ruth',  #英語 
+        'zh-tw': 'Zhiyu', #中文 
+        'zh-cn': 'Hiujin',  # 判斷廣東話
+        'fr': 'Lea',  #法語
+        'de' : 'Vicki',  #德語
+        'ja' : 'Kazuha', #日語
+        'pt' : 'Ines', #葡萄牙語
+        'es' : 'Lucia'  #西班牙語 
     }
 
     # 使用字典.get()方法，如果找不到語言對應的VoiceId，則使用默認值
