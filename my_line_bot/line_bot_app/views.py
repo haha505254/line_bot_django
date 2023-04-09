@@ -28,8 +28,8 @@ import requests
 import json
 from dotenv import load_dotenv
 import openai
-from langdetect import detect
-
+from langdetect import DetectorFactory, detect ,detect_langs
+import langid
 
 
 
@@ -47,10 +47,11 @@ openai.api_key = os.environ['OPENAI_API_KEY']
 
 def detect_language(text):
     try:
-        return detect(text)
+        lang, confidence = langid.classify(text)
+        print("什麼語言"+lang)
+        return lang
     except:
         return None
-
 
 def chat_with_gpt3(message):
     headers = {
@@ -90,12 +91,13 @@ def speech_to_text(audio_file_path):
 
     try:
         text = transcript['text']
-        print("奇怪發音"+text)
+        print("奇怪發音" + text)
     except KeyError:
         text = "無法識別語音"
         logging.warning("無法識別語音")
 
-    return text
+    language = detect_language(text)
+    return text, language
 
 @csrf_exempt
 def callback(request):
@@ -114,19 +116,20 @@ def get_audio_duration(audio_file_path):
     audio = AudioSegment.from_file(audio_file_path)
     return len(audio) + 1000
 
-def synthesize_speech(text, unique_filename):
+# text to speech
+def synthesize_speech(text, unique_filename, language):
     session = Session(profile_name="default")
     polly = session.client("polly", region_name="us-east-1")
     print('偵測什麼文字'+text)
-    language = detect_language(text)
-    print("這是什麼語言" + language)
+    # language = detect_language(text)
+    # print("這是什麼語言" + language)
 
     # 創建語言到VoiceId的映射
     voice_id_map = {
         'ko': 'Seoyeon', #韓文
         'en': 'Ruth',  #英語 
-        'zh-tw': 'Zhiyu', #中文 
-        'zh-cn': 'Hiujin',  # 判斷廣東話
+        'zh': 'Zhiyu', #中文 
+        'zh-cn': 'Zhiyu',  #中文 
         'fr': 'Lea',  #法語
         'de' : 'Vicki',  #德語
         'ja' : 'Kazuha', #日語
@@ -164,6 +167,7 @@ def synthesize_speech(text, unique_filename):
 # 入口點
 @handler.add(MessageEvent, message=AudioMessage)
 def handle_audio_message(event):
+    DetectorFactory.seed = 0
 
     # step1:取得音檔訊息
     message_content = line_bot_api.get_message_content(event.message.id)
@@ -178,13 +182,13 @@ def handle_audio_message(event):
     wav_file_path = convert_audio_to_wav(audio_file_path)
 
     # step4:將音檔使用speech_recognition語音轉文字
-    text = speech_to_text(wav_file_path)
+    text, language = speech_to_text(wav_file_path)
 
     # step5:將使用者輸入語音對應之文字送到openai 取得 文字回應 
     response_message = chat_with_gpt3(text)
 
     # step6:將回應後的文字 轉語音 且把語音檔案覆蓋掉原本輸入的語音檔案(故此變數synthesized_speech_path無作用)
-    synthesized_speech_path = synthesize_speech(response_message, unique_filename)
+    synthesized_speech_path = synthesize_speech(response_message, unique_filename, language)
 
     # step7:將語音使用linebot要求格式回傳語音檔案  
     audio_file_url = f"https://2a5a-1-200-48-236.ngrok-free.app{settings.MEDIA_URL}{unique_filename}"
