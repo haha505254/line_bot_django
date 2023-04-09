@@ -28,6 +28,11 @@ import requests
 import json
 from dotenv import load_dotenv
 import openai
+from langdetect import detect
+
+
+
+
 # 讀取.env檔
 load_dotenv()
 
@@ -38,6 +43,13 @@ logging.basicConfig(level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %
 line_bot_api = LineBotApi(os.environ['LINE_CHANNEL_ACCESS_TOKEN'])
 handler = WebhookHandler(os.environ['LINE_CHANNEL_SECRET'])
 openai.api_key = os.environ['OPENAI_API_KEY']
+
+
+def detect_language(text):
+    try:
+        return detect(text)
+    except:
+        return None
 
 
 def chat_with_gpt3(message):
@@ -103,13 +115,31 @@ def get_audio_duration(audio_file_path):
     return len(audio) + 1000
 
 def synthesize_speech(text, unique_filename):
-    
     session = Session(profile_name="default")
     polly = session.client("polly", region_name="us-east-1")
-    # Seoyeon kr   Ruth en
+
+    language = detect_language(text)
+    print("這是什麼語言" + language)
+
+    # 創建語言到VoiceId的映射
+    voice_id_map = {
+        'ko': 'Seoyeon',
+        'en': 'Ruth',
+        'zh-tw': 'Zhiyu',
+        'zh-cn': 'Huijin',  # 判斷廣東話
+        'fr': 'Lea',
+        'de' : 'Vicki',
+        'ja' : 'Kazuha',
+        'pt' : 'Ines',
+        'es' : 'Lucia'
+    }
+
+    # 使用字典.get()方法，如果找不到語言對應的VoiceId，則使用默認值
+    voice_id = voice_id_map.get(language, 'Ruth')
+
     try:
         response = polly.synthesize_speech(Text=text, OutputFormat="mp3",
-                                           VoiceId="Seoyeon", Engine='neural')
+                                           VoiceId=voice_id, Engine='neural')
     except (BotoCoreError, ClientError) as error:
         print(error)
         sys.exit(-1)
@@ -131,13 +161,12 @@ def synthesize_speech(text, unique_filename):
 
 
 
-# 入口點 
+# 入口點
 @handler.add(MessageEvent, message=AudioMessage)
 def handle_audio_message(event):
 
     # step1:取得音檔訊息
     message_content = line_bot_api.get_message_content(event.message.id)
-    
 
     # step2:將音檔保存到MEDIA_folder 方便等等讀取 檔名使用uuid4 避免重複
     unique_filename = f"{uuid.uuid4()}.wav"
@@ -166,7 +195,13 @@ def handle_audio_message(event):
 
     print(audio_file_url)
     audio_send_message = AudioSendMessage(original_content_url=audio_file_url, duration=duration)
-    line_bot_api.reply_message(event.reply_token, audio_send_message)
+
+    # 新增將使用者輸入語音文字和回覆語音文字一起發送給使用者
+    user_text_message = TextSendMessage(text=f"你說的話：\n{text}")
+    response_text_message = TextSendMessage(text=f"回覆：\n{response_message}")
+
+    # 將文字訊息和語音訊息一起發送
+    line_bot_api.reply_message(event.reply_token, [user_text_message, response_text_message, audio_send_message])
 
     # os.remove(unique_filename)
     # os.remove(wav_file_path)
