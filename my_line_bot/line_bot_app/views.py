@@ -192,7 +192,7 @@ def handle_audio_message(event):
     synthesized_speech_path = synthesize_speech(response_message, unique_filename, language)
 
     # step7:將語音使用linebot要求格式回傳語音檔案  
-    audio_file_url = f"https://059c-138-2-15-103.ngrok-free.app{settings.MEDIA_URL}{unique_filename}"
+    audio_file_url = f"https://untitled321.space{settings.MEDIA_URL}{unique_filename}"
 
     duration = get_audio_duration(audio_file_path)
 
