@@ -49,3 +49,39 @@ Not Found: /
 偵測什麼文字我很好，謝謝你關心。你呢？最近有什麼困擾或是需要我幫忙的地方嗎？
 2023-04-25 05:11:53,206 - INFO - Received and saved audio message
 https://059c-138-2-15-103.ngrok-free.app/media/7f534556-7441-4b55-9016-b4fdc24a85c4.wav
+[2023-04-25 06:53:04 +0000] [2631] [INFO] Starting gunicorn 20.1.0
+[2023-04-25 06:53:04 +0000] [2631] [INFO] Listening at: http://127.0.0.1:8000 (2631)
+[2023-04-25 06:53:04 +0000] [2631] [INFO] Using worker: sync
+[2023-04-25 06:53:04 +0000] [2634] [INFO] Booting worker with pid: 2634
+[2023-04-25 07:05:51 +0000] [2631] [INFO] Handling signal: term
+[2023-04-25 07:05:51 +0000] [2634] [INFO] Worker exiting (pid: 2634)
+[2023-04-25 07:05:51 +0000] [2631] [INFO] Shutting down: Master
+[2023-04-25 07:27:08 +0000] [5393] [INFO] Starting gunicorn 20.1.0
+[2023-04-25 07:27:08 +0000] [5393] [INFO] Listening at: http://127.0.0.1:8000 (5393)
+[2023-04-25 07:27:08 +0000] [5393] [INFO] Using worker: sync
+[2023-04-25 07:27:08 +0000] [5396] [INFO] Booting worker with pid: 5396
+Not Found: /
+2023-04-25 07:27:20,895 - WARNING - Not Found: /
+Not Found: /
+2023-04-25 07:27:21,616 - WARNING - Not Found: /
+Not Found: /
+2023-04-25 07:27:22,447 - WARNING - Not Found: /
+Not Found: /
+2023-04-25 07:27:22,978 - WARNING - Not Found: /
+Not Found: /
+2023-04-25 07:27:23,465 - WARNING - Not Found: /
+Not Found: /
+2023-04-25 07:27:23,914 - WARNING - Not Found: /
+Not Found: /
+2023-04-25 07:27:24,432 - WARNING - Not Found: /
+Not Found: /
+2023-04-25 07:27:39,384 - WARNING - Not Found: /
+Not Found: /
+2023-04-25 07:27:40,150 - WARNING - Not Found: /
+奇怪發音お元気ですか?
+2023-04-25 07:28:07,430 - INFO - initializing identifier
+什麼語言ja
+2023-04-25 07:28:17,188 - INFO - Found credentials in shared credentials file: ~/.aws/credentials
+偵測什麼文字はい、元気です！あなたは元気ですか？最近何か興味深いことがありましたか？
+2023-04-25 07:28:18,952 - INFO - Received and saved audio message
+https://059c-138-2-15-103.ngrok-free.app/media/83c3cd49-9542-48a4-8e73-6f484f9e0fc5.wav
