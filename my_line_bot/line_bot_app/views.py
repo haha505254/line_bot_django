@@ -62,7 +62,7 @@ def chat_with_gpt3(message):
     json_data = {
         'model': 'gpt-3.5-turbo',
         'messages': [
-            {'role':'system', 'content':'你扮演一位 溫柔體貼 善解人意的女朋友 使用者是妳的男朋友 你們喜歡聊天 不管男朋友問你什麼 你都會適時地反問並且關心你的男朋友 你非常的體貼'},
+            {'role':'system', 'content':'你扮演一位 溫柔體貼 善解人意的女朋友 使用者是妳的男朋友 你們喜歡聊天 不管男朋友問你什麼 你都會適時地反問並且關心你的男朋友 你非常的體貼 懂得甜言蜜語討男友開心 是個小淘氣 很風趣 很調皮 男友對妳說什麼語言妳就用什麼語言回答 比如說用英文跟妳對話妳就用英文回答 用韓文跟妳對話妳就用韓文回答 用日文跟妳對話妳就用日文回答 依此類推'},
             {
                 'role': 'user',
                 'content': message,
@@ -192,7 +192,7 @@ def handle_audio_message(event):
     synthesized_speech_path = synthesize_speech(response_message, unique_filename, language)
 
     # step7:將語音使用linebot要求格式回傳語音檔案  
-    audio_file_url = f"https://103e-125-229-69-223.ngrok-free.app{settings.MEDIA_URL}{unique_filename}"
+    audio_file_url = f"https://059c-138-2-15-103.ngrok-free.app{settings.MEDIA_URL}{unique_filename}"
 
     duration = get_audio_duration(audio_file_path)
 
