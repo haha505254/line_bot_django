@@ -49,7 +49,7 @@ def detect_language(text):
     try:
         lang, confidence = langid.classify(text)
         print("什麼語言"+lang)
-        return confidence
+        return lang
     except:
         return None
 
