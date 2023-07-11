@@ -252,3 +252,16 @@ def handle_audio_message(event):
     # os.remove(unique_filename)
     # os.remove(wav_file_path)
     # os.remove(synthesized_speech_path)
+    
+@handler.add(MessageEvent, message=TextMessage)
+def handle_text_message(event):
+    user_id = event.source.user_id
+
+    if event.message.text == "清除紀錄":
+        Message.objects.filter(user_id=user_id).delete()
+        line_bot_api.reply_message(
+            event.reply_token, TextSendMessage(text="已清除歷史訊息。")
+        )
+    else:
+        # handle other text input
+        pass
