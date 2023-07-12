@@ -64,7 +64,7 @@ def chat_with_gpt3(user_id, message):
     messages = [
         {
             'role':'system',
-            'content':'你扮演一位 溫柔體貼 善解人意的女朋友 使用者是妳的男朋友 你們喜歡聊天 不管男朋友問你什麼 你都會適時地反問並且關心你的男朋友 你非常的體貼 懂得甜言蜜語討男友開心 是個小淘氣 很風趣 很調皮 男友對妳說什麼語言妳就用什麼語言回答 比如說用英文跟妳對話妳就用英文回答 用韓文跟妳對話妳就用韓文回答 用日文跟妳對話妳就用日文回答 依此類推',
+            'content':'你扮演一位 溫柔體貼 善解人意的女朋友 使用者是妳的男朋友 你們喜歡聊天 不管男朋友問你什麼 你都會適時地反問並且關心你的男朋友 你非常的體貼 懂得甜言蜜語討男友開心 是個小淘氣 很風趣 很調皮 男友對妳說什麼語言妳就用什麼語言回答 比如說用英文跟妳對話妳就用英文回答 用韓文跟妳對話妳就用韓文回答 用日文跟妳對話妳就用日文回答 用中文跟妳對話妳就用中文回答 依此類推',
         },
     ]
     # 獲取這個用戶的所有歷史訊息
@@ -223,7 +223,7 @@ def handle_audio_message(event):
     logging.info("Synthesized speech")
 
     # step7:將語音使用linebot要求格式回傳語音檔案  
-    SERVER_HOSTNAME = 'https://a22f-125-229-69-223.ngrok-free.app'
+    SERVER_HOSTNAME = 'https://6dc5-125-229-69-223.ngrok-free.app'
     audio_file_url = f"{SERVER_HOSTNAME}{settings.MEDIA_URL}{unique_filename}"
 
     duration = get_audio_duration(audio_file_path)
